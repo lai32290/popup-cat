@@ -75,7 +75,7 @@ setInterval(() => {
 app.post("/register", (req: Request, res: Response) => {
   const { count } = req.body;
   // Usa o endereço IP do remetente da requisição para encontrar a localização geográfica
-  const ip = '8.8.8.8' // req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   console.log(Date.now() - cache.get(ip));
   if (cache.get(ip) && Date.now() - cache.get(ip) < TTL) {
