@@ -20,7 +20,12 @@ export default function Home() {
   React.useEffect(() => {
     const interval = setInterval(log, 1000 * 10);
 
-    return () => clearInterval(interval);
+    window.addEventListener('beforeunload', log);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('beforeunload', log);
+    }
   }, [log]);
 
   React.useEffect(() => {
