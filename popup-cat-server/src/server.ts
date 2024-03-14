@@ -19,7 +19,12 @@ const INTERVAL_TO_SAVE = 1000 * 60 * 10; // 10 minutos
 const app = express();
 const port = 3000;
 
-const s3 = new S3Client({ region: s3Config.region });
+const s3 = new S3Client({ region: s3Config.region,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
 
 const cache = new LRUCache({
   max: 5000,
