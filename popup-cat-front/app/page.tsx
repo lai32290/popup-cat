@@ -2,6 +2,7 @@
 
 import React from "react";
 import { services } from "./_service";
+import * as styles from "./styles.module.css";
 
 export default function Home() {
   const [rank, setRank] = React.useState<{ [key: string]: number }>({});
@@ -9,6 +10,7 @@ export default function Home() {
   const [clickCount, setClickCount] = React.useState(0);
   const countRef = React.useRef(0);
   const submitRef = React.useRef<NodeJS.Timeout>();
+  const [clicked, setClicked] = React.useState(false);
 
   const log = React.useCallback(async function () {
     if (countRef.current === 0) return;
@@ -74,8 +76,14 @@ export default function Home() {
       className="flex min-h-screen flex-col items-center justify-between p-24"
       style={{ userSelect: "none" }}
       onClick={onClick}
+      onMouseDown={() => setClicked(true)}
+      onMouseUp={() => setClicked(false)}
     >
       <h1 className="text-4xl font-bold">{clickCount}</h1>
+
+      <div className={styles.catContainer}>
+        <img src={`/images/${clicked ? 'open' : 'closed'}.png`} alt="" />
+      </div>
 
       <div className="flex flex-col items-center">
         <h2 className="text-2xl font-bold">Rank</h2>

@@ -1,0 +1,6 @@
+.catContainer {
+    position: absolute;
+    bottom: 0;
+    max-height: 100vh;
+    z-index: -1;
+}
