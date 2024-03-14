@@ -6,11 +6,7 @@ import { services } from "./_service";
 export default function Home() {
   const [rank, setRank] = React.useState<{ [key: string]: number }>({});
   const [country, setCountry] = React.useState<string>("");
-  const [clickCount, setClickCount] = React.useState(
-    localStorage.getItem("clickCount")
-      ? parseInt(localStorage.getItem("clickCount")!)
-      : 0
-  );
+  const [clickCount, setClickCount] = React.useState(0);
   const countRef = React.useRef(0);
   const submitRef = React.useRef<NodeJS.Timeout>();
 
@@ -37,6 +33,12 @@ export default function Home() {
       const response = await fetch('https://ipapi.co/json/');
       const data = await response.json();
       setCountry(data.country_code);
+    }
+
+    const savedCountry = localStorage.getItem("country");
+
+    if (savedCountry) {
+      setCountry(savedCountry);
     }
 
     getRank();
