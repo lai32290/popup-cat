@@ -40,10 +40,10 @@ export default function Home() {
       setCountry(data.country_code);
     }
 
-    const savedCountry = localStorage.getItem("country");
+    const savedClickCount = localStorage.getItem("clickCount");
 
-    if (savedCountry) {
-      setCountry(savedCountry);
+    if (savedClickCount) {
+      setClickCount(Number(savedClickCount));
     }
 
     getRank();
