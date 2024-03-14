@@ -2,7 +2,7 @@
 
 import React from "react";
 import { services } from "./_service";
-import * as styles from "./styles.module.css";
+import "./styles.css";
 
 export default function Home() {
   const [rank, setRank] = React.useState<{ [key: string]: number }>({});
@@ -81,7 +81,7 @@ export default function Home() {
     >
       <h1 className="text-4xl font-bold">{clickCount}</h1>
 
-      <div className={styles.catContainer}>
+      <div className="cat-container">
         <img src={`/images/${clicked ? 'open' : 'closed'}.png`} alt="" />
       </div>
 
