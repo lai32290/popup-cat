@@ -19,7 +19,8 @@ const INTERVAL_TO_SAVE = 1000 * 60 * 10; // 10 minutos
 const app = express();
 const port = 3000;
 
-const s3 = new S3Client({ region: s3Config.region,
+const s3 = new S3Client({
+  region: s3Config.region,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
@@ -31,14 +32,19 @@ const cache = new LRUCache({
   ttl: TTL,
 });
 
+interface State {
+  countryScores: { [key: string]: number };
+  prevScores: { [key: string]: number };
+}
 // Para armazenar os scores de cada país
-let countryScores: any = {};
+const state: State = {
+  countryScores: {},
+  prevScores: {},
+};
 
 app.use(bodyParser.json());
 
 app.use(cors());
-
-let prevScores = {};
 
 async function saveToS3(result: any) {
   const params = {
@@ -49,7 +55,7 @@ async function saveToS3(result: any) {
 
   try {
     await s3.send(new PutObjectCommand(params));
-    prevScores = result;
+    state.prevScores = { ...result };
     console.log("Salvo no S3");
   } catch (err) {
     console.error(err);
@@ -61,9 +67,9 @@ async function loadScoreFromS3() {
     const data = await s3.send(
       new GetObjectCommand({ Bucket: "popup-cat", Key: "result.json" })
     );
-    const value = await data.Body?.transformToString() ?? "{}";
-    countryScores = JSON.parse(value);
-    prevScores = countryScores;
+    const value = (await data.Body?.transformToString()) ?? "{}";
+    state.countryScores = JSON.parse(value);
+    state.prevScores = { ...state.countryScores };
     console.log("Carregado do S3");
   } catch (err) {
     console.error(err);
@@ -71,10 +77,19 @@ async function loadScoreFromS3() {
 }
 
 setInterval(() => {
-  if (JSON.stringify(countryScores) === JSON.stringify(prevScores)) return;
+  console.log("Nothing changed to save", {
+    countryScores: state.countryScores,
+    prevScores: state.prevScores,
+  });
 
-  saveToS3(countryScores);
-}, INTERVAL_TO_SAVE);
+  if (
+    JSON.stringify(state.countryScores) === JSON.stringify(state.prevScores)
+  ) {
+    return;
+  }
+
+  saveToS3(state.countryScores);
+}, 1000);
 
 // Endpoint para registro
 app.post("/register", (req: Request, res: Response) => {
@@ -101,10 +116,10 @@ app.post("/register", (req: Request, res: Response) => {
     const country = geo.country;
 
     // Incrementa o score do país com o valor recebido ou inicializa se não existir
-    if (countryScores[country]) {
-      countryScores[country] += count;
+    if (state.countryScores[country]) {
+      state.countryScores[country] += count;
     } else {
-      countryScores[country] = count;
+      state.countryScores[country] = count;
     }
 
     res.send("ok");
@@ -115,7 +130,7 @@ app.post("/register", (req: Request, res: Response) => {
 
 // Endpoint para rank
 app.get("/rank", (req: Request, res: Response) => {
-  res.json({ priorityRank: countryScores });
+  res.json({ priorityRank: state.countryScores });
 });
 
 app.listen(port, () => {
