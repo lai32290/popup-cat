@@ -10,6 +10,7 @@ export default function Home() {
   const [clickCount, setClickCount] = React.useState(0);
   const countRef = React.useRef(0);
   const clickCounterRef = React.useRef<HTMLHeadElement>();
+  const popAudioRef = React.useRef<HTMLAudioElement>();
   const submitRef = React.useRef<NodeJS.Timeout>();
   const [clicked, setClicked] = React.useState(false);
 
@@ -60,6 +61,10 @@ export default function Home() {
       clickCounterRef.current.classList.add("animated");
     }
 
+    if (popAudioRef.current) {
+      popAudioRef.current.play();
+    }
+
     countRef.current++;
     const next = Number(clickCount) + 1;
     setClickCount(next);
@@ -91,6 +96,8 @@ export default function Home() {
       <div className="cat-container">
         <img src={`/images/${clicked ? 'open' : 'closed'}.png`} alt="" />
       </div>
+
+      <audio src="/audios/pop.ogg" ref={popAudioRef as any} />
 
       <div className="flex flex-col items-center">
         <h2 className="text-2xl font-bold">Rank</h2>
