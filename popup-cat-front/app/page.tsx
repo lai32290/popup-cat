@@ -9,6 +9,7 @@ export default function Home() {
   const [country, setCountry] = React.useState<string>("");
   const [clickCount, setClickCount] = React.useState(0);
   const countRef = React.useRef(0);
+  const clickCounterRef = React.useRef<HTMLHeadElement>();
   const submitRef = React.useRef<NodeJS.Timeout>();
   const [clicked, setClicked] = React.useState(false);
 
@@ -53,6 +54,12 @@ export default function Home() {
   }, []);
 
   function onClick() {
+    if (clickCounterRef.current) {
+      clickCounterRef.current.classList.remove("animated");
+      clickCounterRef.current.offsetWidth;
+      clickCounterRef.current.classList.add("animated");
+    }
+
     countRef.current++;
     const next = Number(clickCount) + 1;
     setClickCount(next);
@@ -79,7 +86,7 @@ export default function Home() {
       onMouseDown={() => setClicked(true)}
       onMouseUp={() => setClicked(false)}
     >
-      <h1 className="text-4xl font-bold">{clickCount}</h1>
+      <h1 className="text-4xl font-bold click-counter" ref={clickCounterRef as any}>{clickCount}</h1>
 
       <div className="cat-container">
         <img src={`/images/${clicked ? 'open' : 'closed'}.png`} alt="" />

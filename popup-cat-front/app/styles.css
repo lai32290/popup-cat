@@ -4,3 +4,29 @@
     max-height: 100vh;
     z-index: -1;
 }
+
+.click-counter {
+    font-size: 10rem;
+}
+
+@media screen and (max-width: 600px) {
+    .click-counter {
+        font-size: 5rem;
+    }
+}
+
+@keyframes click-counter-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.click-counter.animated {
+    animation: click-counter-animation 0.2s;
+}
